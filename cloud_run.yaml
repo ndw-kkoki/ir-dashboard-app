@@ -1,0 +1,58 @@
+# Google Cloud Run configuration
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: analysis-dashboard-app
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cpu-throttling: "false"
+        autoscaling.knative.dev/maxScale: "10"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+      - image: gcr.io/PROJECT_ID/analysis-dashboard-app:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: DEBUG
+          value: "false"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: USE_SERVICE_ACCOUNT
+          value: "true"
+        - name: SEGMENT_DATA_FOLDER_ID
+          value: "YOUR_SEGMENT_FOLDER_ID"
+        - name: REVENUE_OVERVIEW_FOLDER_ID
+          value: "YOUR_REVENUE_FOLDER_ID"
+        - name: AI_SUMMARY_FOLDER_ID
+          value: "YOUR_AI_SUMMARY_FOLDER_ID"
+        resources:
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+          requests:
+            cpu: "0.5"
+            memory: "1Gi"
+        startupProbe:
+          httpGet:
+            path: /
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+      serviceAccountName: analysis-dashboard-sa

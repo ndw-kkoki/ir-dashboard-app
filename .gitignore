@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+.venv/
+.env/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Google API Credentials
+token.json
+credentials.json
+
+# Environment
+.env
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
